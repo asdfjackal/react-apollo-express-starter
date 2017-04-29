@@ -20,7 +20,10 @@ export const resolvers = {
 
     },
     updateUserProfile(_, {id, firstName, lastName}){
-
+      return UserProfile.update({firstName, lastName}, {where: {id}})
+      .then((affected) => {
+        return UserProfile.findOne({ where: { id } })
+      });
     },
     createUser(_, {username, email, password}){
       const hash = bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
@@ -32,8 +35,19 @@ export const resolvers = {
         password,
         email,
       }).then((user) => {
-        return user;
+        return UserProfile.create({
+          firstName: "",
+          lastName: "",
+          userId: user.id,
+        }).then((userProfile) => {
+          return userProfile.getUser();
+        })
       });
     },
+  },
+  User: {
+    profile(user){
+      return UserProfile.findOne({where: {id: user.id}});
+    }
   }
 }

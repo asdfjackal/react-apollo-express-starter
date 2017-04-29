@@ -1,0 +1,14 @@
+{
+  "development": {
+    "url": "postgres://asdfjackal:test@localhost:5432/asdfjackal",
+    "dialect": "postgres"
+  },
+  "test": {
+    "url": "postgres://asdfjackal:test@localhost:5432/asdfjackal",
+    "dialect": "postgres"
+  },
+  "production": {
+    "url": "postgres://asdfjackal:test@localhost:5432/asdfjackal",
+    "dialect": "postgres"
+  }
+}
