@@ -29,7 +29,7 @@ server.use('/graphql',
       return { schema };
     return {
       schema,
-      rootValue: req.jwt
+      rootValue: req.user
     }
   })
 );

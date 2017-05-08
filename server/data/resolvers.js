@@ -13,8 +13,10 @@ export const resolvers = {
     userProfile(_, args) {
       return UserProfile.findOne({ where: args });
     },
-    viewer() {
-
+    viewer(obj) {
+      if(!obj)
+        return null;
+      return User.findOne({ where: { username: obj.username }});
     },
   },
   Mutation: {
