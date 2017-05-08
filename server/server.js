@@ -5,10 +5,12 @@ import {
   graphiqlExpress,
 } from 'graphql-server-express';
 import bodyParser from 'body-parser';
+import jwt from 'express-jwt';
 
 import { schema } from './data/schema'
 
 const PORT = 4000;
+const SECRET = process.env.JWT_SECRET;
 
 const reactDevServer = "http://localhost:3000"
 
@@ -16,9 +18,21 @@ const server = express();
 
 /* Insert routes for api endpoints here*/
 
-server.use('/graphql', bodyParser.json(), graphqlExpress({
-  schema
-}));
+server.use('/graphql',
+  jwt({
+    secret: SECRET,
+    credentialsRequired: false
+  }),
+  bodyParser.json(),
+  graphqlExpress((req) => {
+    if(!req.user)
+      return { schema };
+    return {
+      schema,
+      rootValue: req.jwt
+    }
+  })
+);
 
 server.use('/graphiql', graphiqlExpress({
   endpointURL: 'graphql'

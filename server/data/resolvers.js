@@ -1,7 +1,9 @@
 import { User, UserProfile } from './connectors';
 import bcrypt from 'bcrypt';
+import jwt from 'jwt-simple';
 
 const SALT_ROUNDS = 10;
+const SECRET = process.env.JWT_SECRET;
 
 export const resolvers = {
   Query: {
@@ -17,7 +19,21 @@ export const resolvers = {
   },
   Mutation: {
     createToken(_, {username, password}){
-
+      return User.findOne({
+        where: {
+          username
+        }
+      }).then((user) => {
+        console.log(user);
+        return bcrypt.compare(password, user.password).then((res) => {
+          if(res){
+            const token = jwt.encode({username}, SECRET);
+            return {token};
+          }else{
+            return {error: "Incorrect Password"};
+          }
+        });
+      });
     },
     updateUserProfile(_, {id, firstName, lastName}){
       return UserProfile.update({firstName, lastName}, {where: {id}})
@@ -26,22 +42,33 @@ export const resolvers = {
       });
     },
     createUser(_, {username, email, password}){
-      const hash = bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
-        return hash;
-      });
-      console.log(hash);
-      return User.create({
-        username,
-        password,
-        email,
-      }).then((user) => {
-        return UserProfile.create({
-          firstName: "",
-          lastName: "",
-          userId: user.id,
-        }).then((userProfile) => {
-          return userProfile.getUser();
-        })
+      return User.findAll({
+        where: {
+          $or: [
+            { username },
+            { email }
+          ]
+        }
+      }).then((users) => {
+        if (users.length != 0){
+          return null;
+        }
+        return bcrypt.hash(password, SALT_ROUNDS).then( (hash) => {
+          return User.create({
+            username,
+            password: hash,
+            email,
+          }).then((user) => {
+            return UserProfile.create({
+              firstName: "",
+              lastName: "",
+              userId: user.id,
+            }).then((userProfile) => {
+              return user;
+            })
+          });
+        });
+
       });
     },
   },
