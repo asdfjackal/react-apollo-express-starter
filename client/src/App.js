@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import './App.css';
 import Authentication from './components/Authentication';
 
@@ -19,7 +20,7 @@ class App extends Component {
   }
 
   logout(){
-    
+
   }
 
   render() {
@@ -29,8 +30,8 @@ class App extends Component {
           <h2>React Apollo Express Starter</h2>
         </div>
         <p className="App-intro">
-          <Authentication login={this.login} register={this.register} />
         </p>
+        <Authentication login={this.login} register={this.register} />
       </div>
     );
   }
