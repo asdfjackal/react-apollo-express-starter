@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import './App.css';
 import Authentication from './components/Authentication';
 
@@ -18,6 +18,10 @@ class App extends Component {
 
   }
 
+  logout(){
+    
+  }
+
   render() {
     return (
       <div className="App">
@@ -30,6 +34,10 @@ class App extends Component {
       </div>
     );
   }
+}
+
+App.propTypes = {
+  updateToken: PropTypes.func,
 }
 
 export default App;
