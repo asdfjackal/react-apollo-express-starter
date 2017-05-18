@@ -1,17 +1,31 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Authentication from './components/Authentication';
 
 class App extends Component {
+  constructor(props){
+    super(props);
+
+    this.login = this.login.bind(this);
+    this.register = this.register.bind(this);
+  }
+
+  login(username, password){
+
+  }
+
+  register(username, email, password, confirmPassword){
+
+  }
+
   render() {
     return (
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+          <h2>React Apollo Express Starter</h2>
         </div>
         <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
+          <Authentication login={this.login} register={this.register} />
         </p>
       </div>
     );
