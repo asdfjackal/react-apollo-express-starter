@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ApolloClient, createNetworkInterface, ApolloProvider } from 'react-apollo';
+import { ApolloClient, createNetworkInterface, ApolloProvider, graphql, gql, compose } from 'react-apollo';
 import App from '../App'
 
 class AppContainer extends Component{
@@ -11,14 +11,14 @@ class AppContainer extends Component{
     this.updateToken = this.updateToken.bind(this);
   }
 
-  updateToken(newToken){
+  updateToken(){
     this.setState({token: localStorage.getItem("authToken")});
   }
 
   render(){
     const { token } = this.state;
     const networkInterface = createNetworkInterface({
-      uri: 'localhost:4000/graphql'
+      uri: 'http://localhost:4000/graphql'
     });
 
     networkInterface.use([{
@@ -28,10 +28,54 @@ class AppContainer extends Component{
         }
 
         // get the authentication token from local storage if it exists
-        req.options.headers.authorization = token ? `Bearer ${token}` : null;
+        if(token){
+          req.options.headers.authorization = `Bearer ${token}`;
+        }
         next();
       },
     }]);
+
+    const registerMutation = gql`
+      mutation register($username: String!, $email: String!, $password: String!) {
+        createUser(username: $username, email: $email, password: $password) {
+          email
+          username
+        }
+      }
+    `;
+
+    const loginMutation = gql`
+      mutation login($username: String!, $password: String!) {
+        createToken(username: $username, password: $password) {
+          token
+        }
+      }
+    `;
+
+    const viewerQuery = gql`
+      query{
+        viewer{
+          id
+          username
+          email
+          profile {
+            id
+            firstName
+            lastName
+          }
+        }
+      }
+    `;
+
+    const AppWithMutations = compose(
+      graphql(registerMutation, {
+        name: 'register'
+      }),
+      graphql(loginMutation, {
+        name: 'login'
+      }),
+      graphql(viewerQuery),
+    )(App);
 
     const client = new ApolloClient({
       networkInterface: networkInterface,
@@ -39,7 +83,7 @@ class AppContainer extends Component{
 
     return (
       <ApolloProvider client={client}>
-        <App updateToken={this.updateToken} />
+        <AppWithMutations updateToken={this.updateToken}/>
       </ApolloProvider>
     )
 
