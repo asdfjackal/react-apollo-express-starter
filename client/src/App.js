@@ -39,6 +39,19 @@ class App extends Component {
       this.login(username, password);
     });
   }
+      query{
+        viewer{
+          id
+          username
+          email
+          profile {
+            id
+            firstName
+            lastName
+          }
+        }
+      }
+    
 
   logout(){
     localStorage.removeItem("authToken");
