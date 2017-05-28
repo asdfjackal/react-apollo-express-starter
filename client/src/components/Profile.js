@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import {graphql, gql} from 'react-apollo'
 import PropTypes from 'prop-types';
-
-import EditProfile from './EditPofile';
+import EditProfile from './EditProfile';
 
 class Profile extends Component {
   constructor(props){
@@ -10,18 +8,38 @@ class Profile extends Component {
     this.state = {
       edit: false,
     }
+
+    this.updateProfile = this.updateProfile.bind(this);
+    this.toggleForm = this.toggleForm.bind(this);
+  }
+
+  updateProfile(firstName, lastName){
+    this.props.mutate({
+      variables: {
+        id: this.props.userData.viewer.profile.id,
+        firstName,
+        lastName,
+      }
+    }).then(() => {
+      this.props.userData.refetch();
+    })
+  }
+
+  toggleForm(){
+    const edit = this.state.edit;
+    this.setState({edit: !edit});
   }
 
   render(){
-    const user = this.props.user;
+    const user = this.props.userData.viewer;
 
     return (
       <div>
         <p>You are logged in as {user.username}</p>
         {
           this.state.edit ?
-          <p>Placeholder edit form</p> :
-          (<div>
+          <EditProfile profile={this.props.userData.viewer.profile} updateProfile={this.updateProfile}/> :
+          <div>
             {
               user.profile.firstName ?
               (<p>First name: {user.profile.firstName}</p>):
@@ -32,8 +50,11 @@ class Profile extends Component {
               (<p>Last name: {user.profile.lastName}</p>):
               (<p>No Last Name on Record</p>)
             }
-          </div>)
+          </div>
         }
+        <button onClick={this.toggleForm}>
+          {this.state.edit ? "Cancel" : "Edit"}
+        </button><br />
         <button onClick={this.props.logout}>Logout</button>
       </div>
 
@@ -42,16 +63,7 @@ class Profile extends Component {
 }
 
 Profile.propTypes = {
-  user: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    username: PropTypes.string.required,
-    email: PropTypes.string.required,
-    profile: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      firstName: PropTypes.string.required,
-      lastName: PropTypes.string.required,
-    })
-  }).isRequired,
+  userData: PropTypes.object.isRequired,
   logout: PropTypes.func.isRequired,
 }
 

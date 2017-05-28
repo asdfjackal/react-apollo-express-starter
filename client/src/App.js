@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { graphql, gql } from 'react-apollo';
 import './App.css';
 import logo from './logo.svg';
 import Authentication from './components/Authentication';
@@ -21,8 +22,10 @@ class App extends Component {
         password,
       }
     }).then(({data}) => {
-      localStorage.setItem("authToken", data.createToken.token);
-      this.props.updateToken();
+      if (data.createToken.token){        
+        localStorage.setItem("authToken", data.createToken.token);
+        this.props.updateToken();
+      }
     }).catch((error) => {
       console.log('Error occured while loggin in', error);
     });
@@ -39,19 +42,6 @@ class App extends Component {
       this.login(username, password);
     });
   }
-      query{
-        viewer{
-          id
-          username
-          email
-          profile {
-            id
-            firstName
-            lastName
-          }
-        }
-      }
-    
 
   logout(){
     localStorage.removeItem("authToken");
@@ -59,7 +49,18 @@ class App extends Component {
   }
 
   render() {
-    const viewer = this.props.data.viewer;
+    const data = this.props.data;
+
+    const updateProfileMutation = gql`
+      mutation($id:Int!, $firstName:String!, $lastName:String!){
+        updateUserProfile(id: $id, firstName:$firstName, lastName:$lastName){
+          firstName
+          lastName
+        }
+      }
+    `;
+
+    const ProfileWithMutation = graphql(updateProfileMutation)(Profile);
 
     return (
       <div className="App">
@@ -70,8 +71,8 @@ class App extends Component {
         <p className="App-intro">
         </p>
         {
-          viewer ?
-          <Profile user={viewer} logout={this.logout} /> :
+          data.viewer ?
+          <ProfileWithMutation userData={data} logout={this.logout} /> :
           <Authentication login={this.login} register={this.register} />
         }
       </div>
