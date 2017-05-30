@@ -6,21 +6,23 @@ import {
 } from 'graphql-server-express';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
+import colors from 'colors';
 
 import { schema } from './data/schema'
-
-const PORT = 4000;
-const SECRET = process.env.JWT_SECRET;
+import { PORT, JWT_SECRET } from './settings'
 
 const reactDevServer = "http://localhost:3000"
 
 const server = express();
 
-/* Insert routes for api endpoints here*/
+if(JWT_SECRET === "secret-key"){
+  console.log("[WARNING]".red + " no secret key has been defined in environment variables")
+}
 
+/* Insert routes for api endpoints here*/
 server.use('/graphql',
   jwt({
-    secret: SECRET,
+    secret: JWT_SECRET,
     credentialsRequired: false
   }),
   bodyParser.json(),

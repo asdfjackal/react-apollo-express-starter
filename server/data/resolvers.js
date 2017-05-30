@@ -1,9 +1,9 @@
 import { User, UserProfile } from './connectors';
 import bcrypt from 'bcrypt';
 import jwt from 'jwt-simple';
+import { JWT_SECRET } from '../settings'
 
 const SALT_ROUNDS = 10;
-const SECRET = process.env.JWT_SECRET;
 
 export const resolvers = {
   Query: {
@@ -29,7 +29,7 @@ export const resolvers = {
         console.log(user);
         return bcrypt.compare(password, user.password).then((res) => {
           if(res){
-            const token = jwt.encode({username}, SECRET);
+            const token = jwt.encode({username}, JWT_SECRET);
             return {token};
           }else{
             return {error: "Incorrect Password"};
@@ -37,10 +37,30 @@ export const resolvers = {
         });
       });
     },
-    updateUserProfile(_, {id, firstName, lastName}){
+    updateUserProfile(obj, {id, firstName, lastName}){
+      return UserProfile.findOne({ where: {id} })
+      .then((profile) => {
+        return User.findOne({ where: {id: profile.userId}})
+        .then((user) => {
+          if(user.username === obj.username){
+            return profile.update({firstName, lastName})
+            .then(() => {
+              return profile.reload()
+              .then(() => {
+                return profile;
+              });
+            });
+          }else{
+            return null;
+          }
+        });
+      });
       return UserProfile.update({firstName, lastName}, {where: {id}})
-      .then((affected) => {
+      .then(() => {
         return UserProfile.findOne({ where: { id } })
+        .then((affected) => {
+          return affected;
+        })
       });
     },
     createUser(_, {username, email, password}){

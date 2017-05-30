@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize';
+import { PG_URI } from '../settings'
 
-var db = new Sequelize(process.env.PG_URI);
+var db = new Sequelize(PG_URI);
 
 const UserModel = db.define('user', {
   username: { allowNull: false, type: Sequelize.STRING },

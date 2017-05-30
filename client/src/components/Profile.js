@@ -20,7 +20,8 @@ class Profile extends Component {
         firstName,
         lastName,
       }
-    }).then(() => {
+    }).then(({ data }) => {
+      console.log(data);
       this.props.userData.refetch();
     })
   }
