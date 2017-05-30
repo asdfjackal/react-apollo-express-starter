@@ -8,40 +8,41 @@ import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import colors from 'colors';
 
-import { schema } from './data/schema'
-import { PORT, JWT_SECRET } from './settings'
+import schema from './data/schema';
+import { PORT, JWT_SECRET } from './settings';
 
-const reactDevServer = "http://localhost:3000"
+const reactDevServer = 'http://localhost:3000';
 
 const server = express();
 
-if(JWT_SECRET === "secret-key"){
-  console.log("[WARNING]".red + " no secret key has been defined in environment variables")
+if (JWT_SECRET === 'secret-key') {
+  console.log('%s no secret key has been defined in environment variables', colors.red('[WARNING]'));
 }
 
 /* Insert routes for api endpoints here*/
 server.use('/graphql',
   jwt({
     secret: JWT_SECRET,
-    credentialsRequired: false
+    credentialsRequired: false,
   }),
   bodyParser.json(),
   graphqlExpress((req) => {
-    if(!req.user)
+    if (!req.user) {
       return { schema };
+    }
     return {
       schema,
-      rootValue: req.user
-    }
-  })
+      rootValue: req.user,
+    };
+  }),
 );
 
 server.use('/graphiql', graphiqlExpress({
-  endpointURL: 'graphql'
+  endpointURL: 'graphql',
 }));
 
-server.get('/*', function (req, res) {
-  var url = reactDevServer + req.url;
+server.get('/*', (req, res) => {
+  const url = reactDevServer + req.url;
   req.pipe(request(url)).pipe(res);
 });
 

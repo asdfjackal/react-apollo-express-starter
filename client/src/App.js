@@ -22,7 +22,7 @@ class App extends Component {
         password,
       }
     }).then(({data}) => {
-      if (data.createToken.token){        
+      if (data.createToken.token){
         localStorage.setItem("authToken", data.createToken.token);
         this.props.updateToken();
       }
