@@ -1,0 +1,25 @@
+image: node: latest
+
+cache:
+  paths:
+  - client/node_modules/
+  - server/node_modules/
+
+before_script:
+  - yarn global add node-gyp
+
+stages:
+  - build
+  - test
+
+build_client:
+  stage: test
+  script:
+    - cd client
+    - yarn
+    - yarn build
+
+lint_server:
+    - cd server
+    - yarn
+    - yarn eslint .
