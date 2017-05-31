@@ -13,13 +13,15 @@ stages:
   - test
 
 build_client:
-  stage: test
+  stage: build
   script:
     - cd client
     - yarn
     - yarn build
 
 lint_server:
+  stage: test
+  script:
     - cd server
     - yarn
     - yarn eslint .
