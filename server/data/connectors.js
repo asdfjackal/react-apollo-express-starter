@@ -21,4 +21,5 @@ db.sync();
 const User = db.models.user;
 const UserProfile = db.models.userProfile;
 
+// export default db;
 export { User, UserProfile };
