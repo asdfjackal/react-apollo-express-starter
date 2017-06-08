@@ -39,5 +39,5 @@ test_server:
     - cd server
     - yarn
     - yarn global add sequelize-cli
-    - sequelize db:migrate
+    - sequelize db:migrate --url "$PG_URI"
     - yarn testCI
