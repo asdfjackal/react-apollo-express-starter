@@ -26,6 +26,13 @@ build_client:
     - yarn
     - yarn build
 
+test_client:
+  stage: test
+  script:
+    - cd client
+    - yarn
+    - yarn test
+
 lint_server:
   stage: test
   script:
