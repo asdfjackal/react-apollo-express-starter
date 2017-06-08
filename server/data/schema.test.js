@@ -2,10 +2,6 @@ import { graphql } from 'graphql';
 import schema from './schema';
 import db, { User, UserProfile } from './connectors';
 
-beforeAll(() => {
-  db.sync();
-});
-
 beforeEach(async () => {
   return await db.truncate({ cascade: true });
 });
