@@ -38,4 +38,6 @@ test_server:
   script:
     - cd server
     - yarn
+    - yarn global add sequelize-cli
+    - sequelize db:migrate
     - yarn testCI
