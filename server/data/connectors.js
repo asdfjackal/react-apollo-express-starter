@@ -16,8 +16,6 @@ const UserProfileModel = db.define('userProfile', {
 
 UserProfileModel.belongsTo(UserModel);
 
-db.sync();
-
 const User = db.models.user;
 const UserProfile = db.models.userProfile;
 
