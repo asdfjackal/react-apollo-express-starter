@@ -38,4 +38,4 @@ test_server:
   script:
     - cd server
     - yarn
-    - yarn test
+    - yarn testCI
