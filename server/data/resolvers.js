@@ -8,6 +8,10 @@ const SALT_ROUNDS = 10;
 const resolvers = {
   Query: {
     user(_, args) {
+      console.log(args);
+      if(!args.username && ! args.id){
+        return null;
+      }
       return User.findOne({ where: args });
     },
     userProfile(_, args) {
@@ -27,7 +31,6 @@ const resolvers = {
           username,
         },
       }).then((user) => {
-        console.log(user);
         return bcrypt.compare(password, user.password).then((res) => {
           if (res) {
             const token = jwt.encode({ username }, JWT_SECRET);

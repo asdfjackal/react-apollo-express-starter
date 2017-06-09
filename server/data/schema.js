@@ -25,7 +25,7 @@ const typeDefs = `
 
   type Query {
     user(username: String, id: Int): User
-    userProfile(id: Int): UserProfile
+    userProfile(id: Int!): UserProfile
     viewer: User
   }
 
