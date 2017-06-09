@@ -9,7 +9,7 @@ const resolvers = {
   Query: {
     user(_, args) {
       console.log(args);
-      if(!args.username && ! args.id){
+      if (!args.username && !args.id) {
         return null;
       }
       return User.findOne({ where: args });
@@ -30,15 +30,15 @@ const resolvers = {
         where: {
           username,
         },
-      }).then((user) => {
-        return bcrypt.compare(password, user.password).then((res) => {
+      }).then(user => (
+        bcrypt.compare(password, user.password).then((res) => {
           if (res) {
             const token = jwt.encode({ username }, JWT_SECRET);
             return { token };
           }
           return { error: 'Incorrect Password' };
-        });
-      });
+        })
+      ));
     },
     updateUserProfile(obj, { id, firstName, lastName }) {
       return UserProfile.findOne({ where: { id } })
