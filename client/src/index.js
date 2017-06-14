@@ -1,9 +1,8 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
-import AppContainer from './components/AppContainer';
+import renderRoutes from './routes';
 import './index.css';
 
 ReactDOM.render(
-  <AppContainer />,
+  renderRoutes(),
   document.getElementById('root')
 );
