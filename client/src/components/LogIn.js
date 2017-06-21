@@ -7,7 +7,6 @@ class LogIn extends Component {
     this.state = {
       username: "",
       password: "",
-      errorMessage: this.props.errorMessage,
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -27,13 +26,24 @@ class LogIn extends Component {
   handleSubmit(event) {
     event.preventDefault();
     const {username, password} = this.state;
-    this.props.login(username, password);
+    this.props.mutate({
+      variables: {
+        username,
+        password,
+      }
+    }).then(({data}) => {
+      if (data.createToken.token){
+        localStorage.setItem("authToken", data.createToken.token);
+        this.props.updateToken();
+      }
+    }).catch((error) => {
+      console.log('Error occured while loggin in', error);
+    });
   }
 
   render() {
     return(
       <div>
-        <button onClick={this.props.toggleForm}>SignUp</button><br />
         <form onSubmit={this.handleSubmit}>
           <label>
             Username:
@@ -54,16 +64,13 @@ class LogIn extends Component {
 
           <input type="submit" value="Log In"/>
         </form><br />
-        {this.state.errorMessage}
       </div>
     );
   }
 }
 
 LogIn.propTypes = {
-  login: PropTypes.func,
-  toggleForm: PropTypes.func,
-  errorMessage: PropTypes.string,
+  updateToken: PropTypes.func,
 };
 
 export default LogIn;

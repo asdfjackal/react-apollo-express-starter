@@ -1,11 +1,14 @@
 import React from 'react';
 import { BrowserRouter} from 'react-router-dom';
-import App from './layouts/App';
+import AppContainer from './containers/AppContainer';
 
-const renderRoutes = () => (
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-)
+const renderRoutes = () => {
+
+  return (
+    <BrowserRouter>
+      <AppContainer/>
+    </BrowserRouter>
+  );
+}
 
 export default renderRoutes;
