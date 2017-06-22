@@ -9,7 +9,6 @@ class SignUp extends Component {
       email: "",
       password: "",
       confirmPassword: "",
-      errorMessage: this.props.errorMessage,
     }
 
     this.handleChange = this.handleChange.bind(this);

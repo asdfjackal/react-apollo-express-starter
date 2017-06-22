@@ -14,6 +14,7 @@ class Navigation extends Component {
     e.preventDefault();
     localStorage.removeItem("authToken");
     this.props.updateToken();
+    this.props.history.push('/');
   }
 
   render(){

@@ -8,6 +8,7 @@ class AuthSignIn extends Component {
     this.state = {
       username: "",
       password: "",
+      errorMessage: this.props.errorMessage,
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -36,9 +37,10 @@ class AuthSignIn extends Component {
       if (data.createToken.token){
         localStorage.setItem("authToken", data.createToken.token);
         this.props.updateToken();
+        this.props.history.push('/');
       }
     }).catch((error) => {
-      console.log('Error occured while loggin in', error);
+      this.setState({errorMessage: 'username or password is incorrect'})
     });
   }
 
@@ -65,6 +67,7 @@ class AuthSignIn extends Component {
 
           <input type="submit" value="Log In"/>
         </form><br />
+        {this.state.errorMessage}
       </div>
     );
   }

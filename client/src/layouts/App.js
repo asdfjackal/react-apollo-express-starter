@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
-import { graphql, gql } from 'react-apollo';
+import { Route, Switch, withRouter } from 'react-router-dom';
+import { graphql, gql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
 import Home from '../pages/Home';
 import AuthSignIn from '../pages/AuthSignIn';
@@ -12,6 +12,15 @@ import logo from '../logo.svg';
 
 class App extends Component {
   render() {
+
+    const registerMutation = gql`
+      mutation register($username: String!, $email: String!, $password: String!) {
+        createUser(username: $username, email: $email, password: $password) {
+          email
+          username
+        }
+      }
+    `;
 
     const viewerQuery = gql`
       query{
@@ -36,8 +45,16 @@ class App extends Component {
       }
     `;
 
-    const NavigationWithQuery = graphql(viewerQuery)(Navigation);
-    const AuthSignInWithMutation = graphql(loginMutation)(AuthSignIn)
+    const NavigationWithQuery = graphql(viewerQuery)(withRouter(Navigation));
+    const AuthSignInWithMutation = graphql(loginMutation)(withRouter(AuthSignIn));
+    const AuthJoinWithMutations = compose(
+      graphql(registerMutation, {
+        name: 'register'
+      }),
+      graphql(loginMutation, {
+        name: 'login'
+      }),
+    )(withRouter(AuthJoin));
 
     return (
       <div className="App">
@@ -47,12 +64,15 @@ class App extends Component {
         </div>
         <NavigationWithQuery updateToken={this.props.updateToken}/>
         <Switch>
-          <Route path="/profile" component={EditProfile} />
+          <Route path="/join" render={props => (
+            <AuthJoinWithMutations updateToken={this.props.updateToken} />
+          )
+          } />
           <Route path="/signin" render={props => (
             <AuthSignInWithMutation updateToken={this.props.updateToken} />
           )
           } />
-          <Route path="/join" component={AuthJoin} />
+          <Route path="/profile" component={EditProfile} />
           <Route path="/" component={Home} />
         </Switch>
       </div>
