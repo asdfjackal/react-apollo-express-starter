@@ -1,14 +1,14 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jwt-simple';
+import request from 'request-promise-native';
 import { User, UserProfile } from './connectors';
-import { JWT_SECRET } from '../settings';
+import { JWT_SECRET, CAPTCHA_SECRET } from '../settings';
 
 const SALT_ROUNDS = 10;
 
 const resolvers = {
   Query: {
     user(_, args) {
-      console.log(args);
       if (!args.username && !args.id) {
         return null;
       }
@@ -56,35 +56,42 @@ const resolvers = {
         })
       ));
     },
-    createUser(_, { username, email, password }) {
+    createUser(_, { username, email, password, captcha }) {
       if ((username === '') || (email === '') || (password === '')) {
         return null;
       }
-      return User.findAll({
-        where: {
-          $or: [
-            { username },
-            { email },
-          ],
-        },
-      }).then((users) => {
-        if (users.length !== 0) {
-          return null;
+      const postURL = `https://www.google.com/recaptcha/api/siteverify?secret=${CAPTCHA_SECRET}&response=${captcha}`;
+
+      return request.post(postURL).then((body) => {
+        if (JSON.parse(body).success === true) {
+          return User.findAll({
+            where: {
+              $or: [
+                { username },
+                { email },
+              ],
+            },
+          }).then((users) => {
+            if (users.length !== 0) {
+              return null;
+            }
+            return bcrypt.hash(password, SALT_ROUNDS).then(hash => (
+              User.create({
+                username,
+                password: hash,
+                email,
+              }).then(user => (
+                UserProfile.create({
+                  firstName: '',
+                  lastName: '',
+                  userId: user.id,
+                }).then(() => (user))
+              ))
+            ));
+          });
         }
-        return bcrypt.hash(password, SALT_ROUNDS).then(hash => (
-          User.create({
-            username,
-            password: hash,
-            email,
-          }).then(user => (
-            UserProfile.create({
-              firstName: '',
-              lastName: '',
-              userId: user.id,
-            }).then(() => (user))
-          ))
-        ));
-      });
+        return null;
+      }).catch(() => (null));
     },
   },
   User: {

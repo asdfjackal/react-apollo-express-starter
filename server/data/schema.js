@@ -32,7 +32,7 @@ const typeDefs = `
   type Mutation {
     createToken(username: String!, password: String!): JsonWebToken
     updateUserProfile(id: Int!, firstName: String, lastName: String): UserProfile
-    createUser(username: String!, email: String!, password: String!): User
+    createUser(username: String!, email: String!, password: String!, captcha: String!): User
   }
 `;
 

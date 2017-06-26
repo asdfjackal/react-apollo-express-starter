@@ -29,10 +29,18 @@ class AuthJoin extends Component {
   handleSubmit(event) {
     event.preventDefault();
     const {username, email, password, confirmPassword} = this.state;
+    const captcha = window.grecaptcha.getResponse();
     if (!password || !email || !username){
       this.setState({
         errorMessage: 'please make sure all fields are filled in'
       });
+      return;
+    }
+    if (!captcha){
+      this.setState({
+        errorMessage: 'please complete captcha before continuing'
+      });
+      return;
     }
     if (password === confirmPassword){
       this.props.register({
@@ -40,8 +48,15 @@ class AuthJoin extends Component {
           username,
           password,
           email,
+          captcha,
         }
-      }).then(() => {
+      }).then((data) => {
+        if(data.createUser === null){
+          this.setState({
+            errorMessage: 'could not create account'
+          });
+          return;
+        }
         this.props.login({
           variables:{
             username,
@@ -63,7 +78,6 @@ class AuthJoin extends Component {
   render() {
     return(
       <div>
-        <button onClick={this.props.toggleForm}>Log In</button><br />
         <form onSubmit={this.handleSubmit}>
           <label>
             Username:
@@ -97,6 +111,7 @@ class AuthJoin extends Component {
               value={this.state.confirmPassword}
               onChange={this.handleChange} />
           </label><br />
+          <div className="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
           <input type="submit" value="Register"/>
         </form><br />
         {this.state.errorMessage}

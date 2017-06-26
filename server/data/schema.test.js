@@ -7,8 +7,8 @@ beforeEach(async () => {
 });
 
 const createUser =
-`mutation createUser($username: String!, $email: String!, $password: String!){
-  createUser(username: $username, email: $email, password: $password) {
+`mutation createUser($username: String!, $email: String!, $password: String!, $captcha: String!){
+  createUser(username: $username, email: $email, password: $password, captcha: $captcha) {
     id
     username
     profile{
@@ -65,7 +65,7 @@ test('createUser mutation creates a user correctly', async () => {
   var result;
   var data;
 
-  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test"});
+  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test", captcha: ""});
   expect(result.data.createUser.username).toBe("test");
 });
 
@@ -76,7 +76,7 @@ test('updateUserProfile correctly handles one or both arguments', async () => {
   var result;
   var data;
 
-  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test"});
+  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test", captcha: ""});
   const id = result.data.createUser.profile.id;
   result = await graphql(schema, updateUserProfile, rootValue, context, {id, firstName: "John", lastName: "Smith"});
   expect(result.data.updateUserProfile.firstName).toBe("John");
@@ -98,7 +98,7 @@ test('updateUserProfile does not work if user is not logged in', async () => {
   var result;
   var data;
 
-  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test"});
+  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test", captcha: ""});
   const id = result.data.createUser.profile.id;
 
   result = await graphql(schema, updateUserProfile, rootValue, context, {id, firstName: "John", lastName: "Smith"});
@@ -112,7 +112,7 @@ test('createToken provides token when given valid credentials', async () => {
   var result;
   var data;
 
-  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test"});
+  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test", captcha: ""});
   const id = result.data.createUser.profile.id;
 
   result = await graphql(schema, createToken, rootValue, context, {username: "test", password: "test"});
@@ -127,7 +127,7 @@ test('createToken provides error when given invalid credentials', async () => {
   var result;
   var data;
 
-  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test"});
+  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test", captcha: ""});
   const id = result.data.createUser.profile.id;
   result = await graphql(schema, createToken, rootValue, context, {username: "test", password: "hunter2"});
   expect(result.data.createToken.error).not.toBeNull();
@@ -141,7 +141,7 @@ test('viewer works if user is logged in', async () => {
   var result;
   var data;
 
-  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test"});
+  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test", captcha: ""});
   const id = result.data.createUser.profile.id;
 
   result = await graphql(schema, viewer, rootValue, context);
@@ -155,7 +155,7 @@ test('viewer does not work if user is not logged in', async () => {
   var result;
   var data;
 
-  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test"});
+  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test", captcha: ""});
   const id = result.data.createUser.profile.id;
   result = await graphql(schema, viewer, rootValue, context);
   expect(result.data.viewer).toBeNull();
@@ -168,7 +168,7 @@ test('user query shows correct information when given one or both arguments', as
   var result;
   var data;
 
-  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test"});
+  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test", captcha: ""});
   const id = result.data.createUser.id;
 
   result = await graphql(schema, user, rootValue, context, {id});
@@ -185,7 +185,7 @@ test('userProfile query shows correct information', async () => {
   var result;
   var data;
 
-  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test"});
+  result = await graphql(schema, createUser, rootValue, context, {username: "test", email: "test@test.test", password: "test", captcha: ""});
   const id = result.data.createUser.profile.id;
   result = await graphql(schema, updateUserProfile, rootValue, context, {id, firstName: "John", lastName: "Smith"});
   result = await graphql(schema, userProfile, rootValue, context, {id});
