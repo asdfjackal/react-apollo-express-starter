@@ -29,6 +29,11 @@ class AuthJoin extends Component {
   handleSubmit(event) {
     event.preventDefault();
     const {username, email, password, confirmPassword} = this.state;
+    if (!password || !email || !username){
+      this.setState({
+        errorMessage: 'please make sure all fields are filled in'
+      });
+    }
     if (password === confirmPassword){
       this.props.register({
         variables: {

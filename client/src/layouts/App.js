@@ -5,10 +5,11 @@ import PropTypes from 'prop-types';
 import Home from '../pages/Home';
 import AuthSignIn from '../pages/AuthSignIn';
 import AuthJoin from '../pages/AuthJoin';
+import Profile from '../pages/Profile';
 import EditProfile from '../pages/EditProfile';
 import Navigation from '../components/Navigation';
 import './App.css';
-import logo from '../logo.svg';
+import logo from '../resources/logo.svg';
 
 class App extends Component {
   render() {
@@ -45,8 +46,22 @@ class App extends Component {
       }
     `;
 
+    const updateProfileMutation = gql`
+      mutation($id:Int!, $firstName:String!, $lastName:String!){
+        updateUserProfile(id: $id, firstName:$firstName, lastName:$lastName){
+          firstName
+          lastName
+        }
+      }
+    `;
+
     const NavigationWithQuery = graphql(viewerQuery)(withRouter(Navigation));
     const AuthSignInWithMutation = graphql(loginMutation)(withRouter(AuthSignIn));
+    const ProfileWithQuery = graphql(viewerQuery)(Profile);
+    const EditProfileWithQueryAndMutation = compose(
+      graphql(viewerQuery),
+      graphql(updateProfileMutation),
+    )(withRouter(EditProfile));
     const AuthJoinWithMutations = compose(
       graphql(registerMutation, {
         name: 'register'
@@ -72,7 +87,8 @@ class App extends Component {
             <AuthSignInWithMutation updateToken={this.props.updateToken} />
           )
           } />
-          <Route path="/profile" component={EditProfile} />
+          <Route path="/profile/edit" component={EditProfileWithQueryAndMutation} />
+          <Route path="/profile" component={ProfileWithQuery} />
           <Route path="/" component={Home} />
         </Switch>
       </div>

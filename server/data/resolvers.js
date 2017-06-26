@@ -57,6 +57,9 @@ const resolvers = {
       ));
     },
     createUser(_, { username, email, password }) {
+      if ((username === '') || (email === '') || (password === '')) {
+        return null;
+      }
       return User.findAll({
         where: {
           $or: [
