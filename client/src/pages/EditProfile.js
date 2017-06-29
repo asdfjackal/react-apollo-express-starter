@@ -3,16 +3,9 @@ import React, { Component } from 'react';
 class EditProfile extends Component {
   constructor(props) {
     super(props);
-    if(props.data.viewer !== undefined){
-      this.state = {
-        firstName: this.props.data.viewer.profile.firstName,
-        lastName: this.props.data.viewer.profile.lastName,
-      }
-    }else{
-      this.state = {
-        firstName: "",
-        lastName: "",
-      }
+    this.state = {
+      firstName: '',
+      lastName: '',
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -44,16 +37,26 @@ class EditProfile extends Component {
     })
   }
 
+  componentWillReceiveProps(nextProps){
+    if(nextProps.data.loading === false){
+      this.setState({
+        firstName: nextProps.data.viewer.profile.firstName,
+        lastName: nextProps.data.viewer.profile.lastName,
+      });
+    }
+  }
+
   render(){
+
     return(
       <div>
         {
-          (this.props.data.viewer === undefined) ?
+          (this.props.data.loading === true) ?
           <p>Loading...</p>:
           <div>
             <form onSubmit={this.handleSubmit}>
               <label>
-                First name:
+                First Name:
                 <input
                   name="firstName"
                   type="text"
@@ -61,7 +64,7 @@ class EditProfile extends Component {
                   onChange={this.handleChange} />
               </label><br />
               <label>
-                Last name:
+                Last Name:
                 <input
                   name="lastName"
                   type="text"
@@ -71,7 +74,6 @@ class EditProfile extends Component {
 
               <input type="submit" value="Update Profile"/>
             </form><br />
-            {this.state.errorMessage}
           </div>
         }
       </div>
