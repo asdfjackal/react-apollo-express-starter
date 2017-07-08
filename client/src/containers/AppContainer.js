@@ -41,7 +41,7 @@ class AppContainer extends Component{
 
     return (
       <ApolloProvider client={client}>
-        <App updateToken={this.updateToken}/>
+          <App updateToken={this.updateToken}/>
       </ApolloProvider>
     )
 

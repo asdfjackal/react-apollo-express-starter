@@ -10,7 +10,7 @@ class Profile extends Component {
       <div>
         {
         (user === undefined) ?
-        <p>Loading...</p> :
+        <p></p> :
         <div>
           <p>You are logged in as {user.username}</p>
           {

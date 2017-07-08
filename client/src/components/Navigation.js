@@ -18,6 +18,8 @@ class Navigation extends Component {
   }
 
   render(){
+    console.log(this.props.data.networkStatus)
+
     return (
       <div>
         {
